@@ -30,8 +30,8 @@
 || @parameter buttonMode indicates BUTTON_PULLUP or BUTTON_PULLDOWN resistor
 */
 Button::Button(uint8_t buttonPin, uint8_t buttonMode, bool _debounceMode, int _debounceDuration){
-	pin=buttonPin;
-  pinMode(pin,INPUT);
+	myPin=buttonPin;
+  pinMode(myPin,INPUT);
   
   debounceMode = _debounceMode;
   debounceDuration = _debounceDuration;
@@ -62,7 +62,7 @@ void Button::pullup(uint8_t buttonMode)
 	mode=BUTTON_PULLUP;
   if (buttonMode == BUTTON_PULLUP_INTERNAL) 
   {
-	  digitalWrite(pin,HIGH);
+	  digitalWrite(myPin,HIGH);
   }
 }
 
@@ -89,7 +89,7 @@ void Button::process(void)
   bitWrite(state, PREVIOUS, bitRead(state, CURRENT));
   
   //get the current status of the pin
-  bitWrite(state, CURRENT, (digitalRead(pin) == mode));
+  bitWrite(state, CURRENT, (digitalRead(myPin) == mode));
 
   uint32_t currentMillis = millis();
 
@@ -194,7 +194,7 @@ bool Button::uniquePress()
 || | This will clear the counter for next iteration and thus return true once
 || #
 */
-bool Button::held(unsigned int time /*=0*/) 
+bool Button::held(uint32_t time /*=0*/) 
 {
   process();
   unsigned int threshold = time ? time : holdEventThreshold; //use holdEventThreshold if time == 0
@@ -216,7 +216,7 @@ bool Button::held(unsigned int time /*=0*/)
 || | Check to see if the button has been pressed for time ms
 || #
 */
-bool Button::heldFor(unsigned int time) 
+bool Button::heldFor(uint32_t time) 
 {
 	if (isPressed()) 
   {
@@ -230,7 +230,7 @@ bool Button::heldFor(unsigned int time)
 || | Set the hold event time threshold
 || #
 */
-void Button::setHoldThreshold(unsigned int holdTime) 
+void Button::setHoldThreshold(uint32_t holdTime) 
 { 
   holdEventThreshold = holdTime; 
 }
@@ -278,7 +278,7 @@ void Button::clickHandler(buttonEventHandler handler)
 ||
 || @parameter handler The function to call when this button is held
 */
-void Button::holdHandler(buttonEventHandler handler, unsigned int holdTime)
+void Button::holdHandler(buttonEventHandler handler, uint32_t holdTime)
 {
   if (holdTime>0) { setHoldThreshold(holdTime); }
   cb_onHold = handler;
@@ -291,18 +291,12 @@ void Button::holdHandler(buttonEventHandler handler, unsigned int holdTime)
 ||
 || @return The time this button has been held
 */
-unsigned int Button::holdTime() const { if (pressedStartTime!=-1) { return millis()-pressedStartTime; } else return 0; }
-
-/*
-|| @description
-|| | Compare a button object against this
-|| #
-|| 
-|| @parameter  rhs the Button to compare against this Button
-|| 
-|| @return true if they are the same
-*/
-bool Button::operator==(Button &rhs) 
-{
-  return (this==&rhs);
+uint32_t Button::holdTime() const { 
+  if (pressedStartTime!=-1) { 
+    return millis()-pressedStartTime;
+  } 
+  else {
+    return 0; 
+  }
 }
+  

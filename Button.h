@@ -18,43 +18,42 @@
 
 #include <inttypes.h>
 
-#define BUTTON_PULLUP HIGH
-#define BUTTON_PULLUP_INTERNAL 2
-#define BUTTON_PULLDOWN LOW
+#define BUTTON_PULLUP           HIGH
+#define BUTTON_PULLUP_INTERNAL  2
+#define BUTTON_PULLDOWN         LOW
 
 class Button;
-typedef void (*buttonEventHandler)(Button&);
+typedef void (*buttonEventHandler)(const Button&);
 
 class Button {
   public:
   
     Button(uint8_t buttonPin, uint8_t buttonMode=BUTTON_PULLUP_INTERNAL, bool _debounceMode=true, int _debounceDuration=20);
     
-    uint8_t             pin;
+    int  pin() const {return myPin; }
     void pullup(uint8_t buttonMode);
     void pulldown();
     void process();
 
-    bool isPressed(bool proc=true);
-    bool wasPressed(bool proc=true);
-    bool stateChanged(bool proc=true);
+    bool isPressed(bool proccessFirst=true);
+    bool wasPressed(bool proccessFirst=true);
+    bool stateChanged(bool proccessFirst=true);
     bool uniquePress();
     
-    void setHoldThreshold(unsigned int holdTime);
-    bool held(unsigned int time=0);
-    bool heldFor(unsigned int time);
+    void setHoldThreshold(uint32_t holdTime);
+    bool held(uint32_t time=0);
+    bool heldFor(uint32_t time);
     
     void pressHandler(buttonEventHandler handler);
     void releaseHandler(buttonEventHandler handler);
     void clickHandler(buttonEventHandler handler);
-    void holdHandler(buttonEventHandler handler, unsigned int holdTime=500);
+    void holdHandler(buttonEventHandler handler, uint32_t holdTime=500);
   
-    unsigned int holdTime() const;
-    inline unsigned int presses() const { return numberOfPresses; }
-    
-    bool operator==(Button &rhs);
+    uint32_t holdTime() const;
+    inline uint16_t presses() const { return numberOfPresses; }
     
   private: 
+    uint8_t             myPin;
     uint8_t             mode;
     uint8_t             state;
     bool                debounceMode;
@@ -66,7 +65,7 @@ class Button {
     buttonEventHandler  cb_onRelease;
     buttonEventHandler  cb_onClick;
     buttonEventHandler  cb_onHold;
-    unsigned int        numberOfPresses;
+    uint16_t            numberOfPresses;
     bool                triggeredHoldEvent;
 };
 
