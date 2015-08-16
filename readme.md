@@ -1,8 +1,14 @@
 # New & Improved Arduino Button Library
 
 _by Ted Hayes, from code originally by Alexander Brevig & Tom Igoe_
+_additionally modified by Lee Thomason_
 
-The Arduino Button library makes it easy to do some very common but rather tedious tasks.  Usually when you interact with a button (such as a momentary switch), you mainly want to detect the state change, not just the current state.  You have to do something like:
+The Arduino Button library makes it easy to do some very common but rather 
+tedious tasks, including detecting clicks, long presses, and debouncingp
+
+Usually when you interact with a button (such as a momentary 
+switch), you mainly want to detect the state change, not just the current 
+state.  You have to do something like:
 
 	int lastState = 0;
 
@@ -14,7 +20,8 @@ The Arduino Button library makes it easy to do some very common but rather tedio
 		lastState = currentState;
 	}
 
-It's not hard, just tedious.  This new and improved Button library makes this much simpler but adds so much more.  Now you can do it this way:
+It's not hard, just tedious.  This new and improved Button library makes this 
+much simpler but adds so much more.  Now you can do it this way:
 
 	Button button = Button(12);
 
@@ -49,9 +56,19 @@ It's not hard, just tedious.  This new and improved Button library makes this mu
 
 	`if(button.isPressed()) ...`
 
+	Note that state-change detection currently doesn't support debouncing.
+	You should use the callback model if you need debouncing.
+
 * Callback model
 
 	`button.pressHandler(onPress)`
+
+	There are 4 callbacks you can (optionally) use: press, release,
+	click, and hold. 'press' and 'release' are sent for every button.
+	'click' and 'hold' are exclusive. 
+
+	- 'hold' will be sent for a long press, before 'release'
+	- 'click' will be sent for a short press, after 'release'
 
 * Built-in debouncing
 
@@ -61,6 +78,10 @@ It's not hard, just tedious.  This new and improved Button library makes this mu
 
 ## Installing
 
-To install, [download](https://github.com/virgildisgr4ce/Button/zipball/master) the library, extract it to ~/Documents/Arduino/libraries and rename the folder "Button." (Github generates a different name for the zip link.) Restart Arduino if it was already open.
+To install, [download](https://github.com/virgildisgr4ce/Button/zipball/master) 
+the library, extract it to ~/Documents/Arduino/libraries and rename the folder 
+"Button." (Github generates a different name for the zip link.) Restart Arduino 
+if it was already open.
 
-I hope you find this useful! Please report any bugs using the [Github issue tracker](https://github.com/virgildisgr4ce/Button/issues).
+I hope you find this useful! Please report any bugs using the [Github issue 
+tracker](https://github.com/virgildisgr4ce/Button/issues).

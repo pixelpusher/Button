@@ -48,6 +48,7 @@ Button::Button(uint8_t buttonPin, uint8_t buttonMode, bool _debounceMode, int _d
   
   numberOfPresses = 0;
   triggeredHoldEvent = true;
+  holdEventThreshold = 0;
 }
 
 /*
@@ -85,49 +86,39 @@ void Button::pulldown(void)
 void Button::process(void)
 {
   //save the previous value
-  bitWrite(state,PREVIOUS,bitRead(state,CURRENT));
+  bitWrite(state, PREVIOUS, bitRead(state, CURRENT));
   
   //get the current status of the pin
-  if (digitalRead(pin) == mode)
-  {
-    //currently the button is not pressed
-    bitWrite(state,CURRENT,false);
-  } 
-  else 
-  {
-    //currently the button is pressed
-    bitWrite(state,CURRENT,true);
-  }
-  
+  bitWrite(state, CURRENT, (digitalRead(pin) == mode));
+
+  uint32_t currentMillis = millis();
+
   //handle state changes
   if (bitRead(state,CURRENT) != bitRead(state,PREVIOUS))
   {
-    unsigned int interval = millis() - debounceStartTime;
-    // if(debounceMode){
-    //   Serial.print("debounceStartTime: ");
-    //   Serial.print(debounceStartTime);
-    //   Serial.print("\tdebounceDuration: ");
-    //   Serial.println(debounceDuration);
-      // Serial.println(interval);
-    // }
+    uint32_t interval = currentMillis - debounceStartTime;
+
     if(debounceMode && interval < debounceDuration){
       // not enough time has passed; ignore
       return;
     }
-    // Serial.println("state changed");
-    debounceStartTime = millis();
+    debounceStartTime = currentMillis;
+
     //the state changed to PRESSED
-    if (bitRead(state,CURRENT) == true) 
+    if (bitRead(state,CURRENT)) 
     {
       numberOfPresses++;
       if (cb_onPress) { cb_onPress(*this); }   //fire the onPress event
-      pressedStartTime = millis();             //start timing
+      pressedStartTime = currentMillis;        //start timing
       triggeredHoldEvent = false;
     } 
     else //the state changed to RELEASED
     {
       if (cb_onRelease) { cb_onRelease(*this); } //fire the onRelease event
-      if (cb_onClick) { cb_onClick(*this); }   //fire the onClick event AFTER the onRelease
+      // Don't fire both hold and click.
+      if (!triggeredHoldEvent) {
+        if (cb_onClick) { cb_onClick(*this); }   //fire the onClick event AFTER the onRelease
+      }
       //reset states (for timing and for event triggering)
       pressedStartTime = -1;
     }
@@ -139,15 +130,12 @@ void Button::process(void)
     //note that the state did not change
     bitWrite(state,CHANGED,false);
     //should we trigger an onHold event?
-    if (pressedStartTime!=-1 && !triggeredHoldEvent) 
+    if (pressedStartTime != -1 && !triggeredHoldEvent && bitRead(state, CURRENT)) 
     {
-      if (millis()-pressedStartTime > holdEventThreshold) 
+      if (currentMillis - pressedStartTime > holdEventThreshold) 
       { 
-        if (cb_onHold) 
-        { 
-          cb_onHold(*this); 
-          triggeredHoldEvent = true;
-        }
+        if (cb_onHold) cb_onHold(*this);
+        triggeredHoldEvent = true;
       }
     }
   }
@@ -290,7 +278,7 @@ void Button::clickHandler(buttonEventHandler handler)
 ||
 || @parameter handler The function to call when this button is held
 */
-void Button::holdHandler(buttonEventHandler handler, unsigned int holdTime /*=0*/)
+void Button::holdHandler(buttonEventHandler handler, unsigned int holdTime)
 {
   if (holdTime>0) { setHoldThreshold(holdTime); }
   cb_onHold = handler;

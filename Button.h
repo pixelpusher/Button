@@ -47,7 +47,7 @@ class Button {
     void pressHandler(buttonEventHandler handler);
     void releaseHandler(buttonEventHandler handler);
     void clickHandler(buttonEventHandler handler);
-    void holdHandler(buttonEventHandler handler, unsigned int holdTime=0);
+    void holdHandler(buttonEventHandler handler, unsigned int holdTime=500);
   
     unsigned int holdTime() const;
     inline unsigned int presses() const { return numberOfPresses; }
@@ -58,10 +58,10 @@ class Button {
     uint8_t             mode;
     uint8_t             state;
     bool                debounceMode;
-    unsigned long       pressedStartTime;
-    unsigned int        holdEventThreshold;
-    unsigned long       debounceStartTime;
-    int                 debounceDuration;
+    uint32_t            pressedStartTime;
+    uint32_t            holdEventThreshold;
+    uint32_t            debounceStartTime;
+    uint32_t            debounceDuration;
     buttonEventHandler  cb_onPress;
     buttonEventHandler  cb_onRelease;
     buttonEventHandler  cb_onClick;
