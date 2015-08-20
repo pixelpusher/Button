@@ -1,8 +1,5 @@
 # New & Improved Arduino Button Library
 
-_by Ted Hayes, from code originally by Alexander Brevig & Tom Igoe. 
- Additionally modified by Lee Thomason_
-
 The Arduino Button library makes it easy to do some very common but rather 
 tedious tasks, including detecting clicks, long presses, and debouncing.
 
@@ -76,4 +73,8 @@ much simpler but adds so much more.  Now you can do it this way:
 
 ## Installing
 
+## Credits
+
+ By Ted Hayes, from code originally by Alexander Brevig & Tom Igoe. 
+ Additionally modified by Lee Thomason.
 
