@@ -54,10 +54,8 @@ much simpler but adds so much more.  Now you can do it this way:
 
 * Simplified state-change detection:
 
-	`if(button.isPressed()) ...`
-
-	Note that state-change detection currently doesn't support debouncing.
-	You should use the callback model if you need debouncing.
+	`if(button.isPressed()) ...` isPressed() accounts for debouncing,
+	so you don't have to worry about false presses.
 
 * Callback model
 
@@ -78,10 +76,4 @@ much simpler but adds so much more.  Now you can do it this way:
 
 ## Installing
 
-To install, [download](https://github.com/virgildisgr4ce/Button/zipball/master) 
-the library, extract it to ~/Documents/Arduino/libraries and rename the folder 
-"Button." (Github generates a different name for the zip link.) Restart Arduino 
-if it was already open.
 
-I hope you find this useful! Please report any bugs using the [Github issue 
-tracker](https://github.com/virgildisgr4ce/Button/issues).
