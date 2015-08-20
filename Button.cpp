@@ -21,6 +21,8 @@
 #define PREVIOUS 1
 #define CHANGED 2
 
+//#define DEBUG_SERIAL
+
 /*
 || @constructor
 || | Set the initial state of this button
@@ -29,7 +31,14 @@
 || @parameter buttonPin  sets the pin that this switch is connected to
 || @parameter buttonMode indicates BUTTON_PULLUP or BUTTON_PULLDOWN resistor
 */
-Button::Button(uint8_t buttonPin, uint8_t buttonMode, bool _debounceMode, int _debounceDuration){
+Button::Button(uint8_t buttonPin, uint8_t buttonMode, bool _debounceMode, int _debounceDuration)
+{
+  init(buttonPin, buttonMode, _debounceMode, _debounceDuration);
+}
+
+
+void Button::init(uint8_t buttonPin, uint8_t buttonMode, bool _debounceMode, int _debounceDuration)
+{
 	myPin=buttonPin;
   pinMode(myPin,INPUT);
   
@@ -37,7 +46,11 @@ Button::Button(uint8_t buttonPin, uint8_t buttonMode, bool _debounceMode, int _d
   debounceDuration = _debounceDuration;
   debounceStartTime = millis();
 
-	buttonMode==BUTTON_PULLDOWN ? pulldown() : pullup(buttonMode);
+	if (buttonMode == BUTTON_PULLDOWN)
+    pulldown();
+  else
+    pullup(buttonMode);
+
   state = 0;
   bitWrite(state,CURRENT,!mode);
   
@@ -48,7 +61,12 @@ Button::Button(uint8_t buttonPin, uint8_t buttonMode, bool _debounceMode, int _d
   
   numberOfPresses = 0;
   triggeredHoldEvent = true;
-  holdEventThreshold = 0;
+  holdEventThreshold = DEFAULT_HOLD_TIME;
+
+  #ifdef DEBUG_SERIAL
+  Serial.print("Button init:");
+  Serial.println(buttonPin);
+  #endif
 }
 
 /*
@@ -107,6 +125,10 @@ void Button::process(void)
     //the state changed to PRESSED
     if (bitRead(state,CURRENT)) 
     {
+      #ifdef DEBUG_SERIAL
+      Serial.println("Button press.");
+      #endif
+
       numberOfPresses++;
       if (cb_onPress) { cb_onPress(*this); }   //fire the onPress event
       pressedStartTime = currentMillis;        //start timing
@@ -114,9 +136,16 @@ void Button::process(void)
     } 
     else //the state changed to RELEASED
     {
+      #ifdef DEBUG_SERIAL
+      Serial.println("Button release.");
+      #endif
+
       if (cb_onRelease) { cb_onRelease(*this); } //fire the onRelease event
       // Don't fire both hold and click.
       if (!triggeredHoldEvent) {
+        #ifdef DEBUG_SERIAL
+        Serial.println("Button click.");
+        #endif
         if (cb_onClick) { cb_onClick(*this); }   //fire the onClick event AFTER the onRelease
       }
       //reset states (for timing and for event triggering)
@@ -134,6 +163,9 @@ void Button::process(void)
     {
       if (currentMillis - pressedStartTime > holdEventThreshold) 
       { 
+        #ifdef DEBUG_SERIAL
+        Serial.println("Button hold.");
+        #endif
         if (cb_onHold) cb_onHold(*this);
         triggeredHoldEvent = true;
       }
@@ -148,21 +180,9 @@ void Button::process(void)
 || 
 || @return true if button is pressed
 */
-bool Button::isPressed(bool proc)
+bool Button::pressed() const
 {
-  if(proc) process();
 	return bitRead(state,CURRENT);
-}
-
-/*
-|| @description
-|| | Return true if the button has been pressed
-|| #
-*/
-bool Button::wasPressed(bool proc)
-{
-  if(proc) process();
-  return bitRead(state,CURRENT);
 }
 
 /*
@@ -170,9 +190,8 @@ bool Button::wasPressed(bool proc)
 || | Return true if state has been changed
 || #
 */
-bool Button::stateChanged(bool proc)
+bool Button::stateChanged() const
 {
-  if(proc) process();
   return bitRead(state,CHANGED);
 }
 
@@ -181,10 +200,9 @@ bool Button::stateChanged(bool proc)
 || | Return true if the button is pressed, and was not pressed before
 || #
 */
-bool Button::uniquePress()
+bool Button::uniquePress() const
 {
-  process();
-  return (isPressed(false) && stateChanged(false));
+  return (pressed() && stateChanged());
 }
 
 /*
@@ -194,20 +212,9 @@ bool Button::uniquePress()
 || | This will clear the counter for next iteration and thus return true once
 || #
 */
-bool Button::held(uint32_t time /*=0*/) 
+bool Button::held() const
 {
-  process();
-  unsigned int threshold = time ? time : holdEventThreshold; //use holdEventThreshold if time == 0
-	//should we trigger a onHold event?
-  if (pressedStartTime!=-1 && !triggeredHoldEvent) 
-  {
-    if (millis()-pressedStartTime > threshold) 
-    { 
-      triggeredHoldEvent = true;
-      return true;
-    }
-  }
-	return false;
+  return (pressedStartTime != -1) && triggeredHoldEvent; 
 }
 
 /*
@@ -216,13 +223,11 @@ bool Button::held(uint32_t time /*=0*/)
 || | Check to see if the button has been pressed for time ms
 || #
 */
-bool Button::heldFor(uint32_t time) 
+uint32_t Button::holdTime() const
 {
-	if (isPressed()) 
-  {
-		if (millis()-pressedStartTime > time) { return true; }
-	}
-	return false;
+  if (!pressed())
+    return 0;
+  return millis() - pressedStartTime;
 }
 
 /*
@@ -283,20 +288,3 @@ void Button::holdHandler(buttonEventHandler handler, uint32_t holdTime)
   if (holdTime>0) { setHoldThreshold(holdTime); }
   cb_onHold = handler;
 }
-
-/*
-|| @description
-|| | Get the time this button has been held
-|| #
-||
-|| @return The time this button has been held
-*/
-uint32_t Button::holdTime() const { 
-  if (pressedStartTime!=-1) { 
-    return millis()-pressedStartTime;
-  } 
-  else {
-    return 0; 
-  }
-}
-  

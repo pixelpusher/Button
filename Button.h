@@ -27,6 +27,10 @@ typedef void (*buttonEventHandler)(const Button&);
 
 class Button {
   public:
+
+    enum {
+        DEFAULT_HOLD_TIME = 500
+    };    
   
     Button(uint8_t buttonPin, uint8_t buttonMode=BUTTON_PULLUP_INTERNAL, bool _debounceMode=true, int _debounceDuration=20);
     
@@ -35,24 +39,24 @@ class Button {
     void pulldown();
     void process();
 
-    bool isPressed(bool proccessFirst=true);
-    bool wasPressed(bool proccessFirst=true);
-    bool stateChanged(bool proccessFirst=true);
-    bool uniquePress();
+    bool pressed() const;
+    bool stateChanged() const;
+    bool uniquePress() const;
+    bool held() const;
+    uint32_t holdTime() const;
     
     void setHoldThreshold(uint32_t holdTime);
-    bool held(uint32_t time=0);
-    bool heldFor(uint32_t time);
     
     void pressHandler(buttonEventHandler handler);
     void releaseHandler(buttonEventHandler handler);
     void clickHandler(buttonEventHandler handler);
-    void holdHandler(buttonEventHandler handler, uint32_t holdTime=500);
+    void holdHandler(buttonEventHandler handler, uint32_t holdTime=DEFAULT_HOLD_TIME);
   
-    uint32_t holdTime() const;
     inline uint16_t presses() const { return numberOfPresses; }
     
   private: 
+    void init(uint8_t buttonPin, uint8_t buttonMode=BUTTON_PULLUP_INTERNAL, bool _debounceMode=true, int _debounceDuration=20);
+
     uint8_t             myPin;
     uint8_t             mode;
     uint8_t             state;
