@@ -47,7 +47,7 @@ class Button {
     void pressHandler(buttonEventHandler handler);
     void releaseHandler(buttonEventHandler handler);
     void clickHandler(buttonEventHandler handler);
-    void holdHandler(buttonEventHandler handler, uint32_t holdTime=DEFAULT_HOLD_TIME);
+    void holdHandler(buttonEventHandler handler);
   
   private: 
     void pullup(uint8_t buttonMode);

@@ -181,8 +181,7 @@ void Button::clickHandler(buttonEventHandler handler)
 }
 
 
-void Button::holdHandler(buttonEventHandler handler, uint32_t holdTime)
+void Button::holdHandler(buttonEventHandler handler)
 {
-  if (holdTime>0) { setHoldThreshold(holdTime); }
   cb_onHold = handler;
 }
