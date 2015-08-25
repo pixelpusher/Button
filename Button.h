@@ -49,8 +49,6 @@ class Button {
     void clickHandler(buttonEventHandler handler);
     void holdHandler(buttonEventHandler handler, uint32_t holdTime=DEFAULT_HOLD_TIME);
   
-    inline uint16_t presses() const { return numberOfPresses; }
-    
   private: 
     void pullup(uint8_t buttonMode);
     void pulldown();
