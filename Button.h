@@ -1,5 +1,5 @@
-#ifndef Button_h
-#define Button_h
+#ifndef BUTTON_LIBRARY_INCLUDED
+#define BUTTON_LIBRARY_INCLUDED
 
 #include <inttypes.h>
 
@@ -25,7 +25,7 @@ class Button {
      *      - BUTTON_PULLUP is 'buttonPin' connected (through a resistor) to high. When pressed, the button goes low.
      *  'debounceDuration' is how long it takes the button to settle, mechanically, when pressed.
      */
-    Button(uint8_t buttonPin, uint8_t buttonMode=BUTTON_PULLUP, uint32_t debounceDuration = DEFAULT_BOUNCE_DURATION);
+    Button(uint8_t buttonPin, uint8_t buttonMode = BUTTON_PULLUP, uint32_t debounceDuration = DEFAULT_BOUNCE_DURATION);
     
     int  pin() const {return myPin; }
 
@@ -68,4 +68,4 @@ class Button {
     bool                triggeredHoldEvent;
 };
 
-#endif
+#endif // BUTTON_LIBRARY_INCLUDED
