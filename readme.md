@@ -1,26 +1,11 @@
-# New & Improved Arduino Button Library
+# Arduino Button Library
 
 The Arduino Button library makes it easy to do some very common but rather 
 tedious tasks, including detecting clicks, long presses, and debouncing.
 
-Usually when you interact with a button (such as a momentary 
-switch), you mainly want to detect the state change, not just the current 
-state.  You have to do something like:
+## Example
 
-	int lastState = 0;
-
-	void loop(){
-		int currentState = digitalRead(11);
-		if(currentState != lastState){
-			// do something
-		}
-		lastState = currentState;
-	}
-
-It's not hard, just tedious.  This new and improved Button library makes this 
-much simpler but adds so much more.  Now you can do it this way:
-
-	Button button = Button(12);
+	Button button(12);
 
 	void onPress(Button& b){
 		Serial.print("onPress: ");
@@ -41,20 +26,14 @@ much simpler but adds so much more.  Now you can do it this way:
 
 ## Features
 
-* Instance-based design
-
-	`Button myButton(11);`
-
-* Automatic pull-up setting
+* Supports both pull-up and poll down buttons.
 
 	`Button myButton(11, BUTTON_PULLUP_INTERNAL);`
 
-* Simplified state-change detection:
+* Simple yet powerful queries for press, held, and release. All
+  the queries debounce-filtered.
 
-	`if(button.isPressed()) ...` isPressed() accounts for debouncing,
-	so you don't have to worry about false presses.
-
-* Callback model
+* Callback model. Probably the easiest way to use the Button functionality.
 
 	`button.pressHandler(onPress)`
 
@@ -65,16 +44,9 @@ much simpler but adds so much more.  Now you can do it this way:
 	- 'hold' will be sent for a long press, before 'release'
 	- 'click' will be sent for a short press, after 'release'
 
-* Built-in debouncing
-
-    `// Sets 50ms debounce duration`
-
-    `Button button = Button(12, BUTTON_PULLUP_INTERNAL, true, 50);`
+* Built-in debouncing. The library chooses a reasonable debouncing time,
+  but you can set your own.
 
 ## Installing
 
-## Credits
-
- By Ted Hayes, from code originally by Alexander Brevig & Tom Igoe. 
- Additionally modified by Lee Thomason.
 
