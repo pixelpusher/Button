@@ -1,6 +1,7 @@
 #ifndef BUTTON_LIBRARY_INCLUDED
 #define BUTTON_LIBRARY_INCLUDED
 
+#include <Arduino.h>
 #include <inttypes.h>
 
 #define BUTTON_PULLUP           HIGH
@@ -31,12 +32,12 @@ class Button {
 
     void process();
 
-    /// true if pressed
+    /// true if pressed on this loop
+    bool uniquePress() const;
+    /// true if the the button is down
     bool pressed() const;
     /// true if changed at last process() 
     bool stateChanged() const;
-    /// true if the press was at last process()
-    bool uniquePress() const;
     /// true if the button is held to the trigger time or longer
     bool held() const;
     /// return the time the button held down
