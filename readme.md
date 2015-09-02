@@ -31,7 +31,7 @@ tedious tasks, including detecting clicks, long presses, and debouncing.
 	`Button myButton(11, BUTTON_PULLUP_INTERNAL);`
 
 * Simple yet powerful queries for press, held, and release. All
-  the queries debounce-filtered.
+  the queries are debounce-filtered.
 
 * Callback model. Probably the easiest way to use the Button functionality.
 
@@ -44,8 +44,8 @@ tedious tasks, including detecting clicks, long presses, and debouncing.
 	- 'hold' will be sent for a long press, before 'release'
 	- 'click' will be sent for a short press, after 'release'
 
-* Built-in debouncing. The library chooses a reasonable debouncing time,
-  but you can set your own.
+* Built-in debouncing. The library has a reasonable default time, or
+  you can set your own.
 
 ## Installing
 
