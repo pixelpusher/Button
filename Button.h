@@ -30,6 +30,9 @@ class Button {
     
     int  pin() const {return myPin; }
 
+    /** Process the button state change. Should be called from loop().
+     *  Will call the callbacks, if needed.
+     */
     void process();
 
     /// true if pressed on this loop
@@ -45,6 +48,9 @@ class Button {
     
     void setHoldThreshold(uint32_t holdTime);
     
+    /** Every button press generates 'press' and 'release'.
+      * It may also generate a 'click' or a 'hold'.
+      */
     void pressHandler(buttonEventHandler handler);
     void releaseHandler(buttonEventHandler handler);
     void clickHandler(buttonEventHandler handler);
