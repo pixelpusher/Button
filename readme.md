@@ -1,6 +1,6 @@
-# Arduino Button Library
+# Button Library
 
-The Arduino Button library makes it easy to do some very common but rather 
+The Button library for Arduino makes it easy to do some very common but rather 
 tedious tasks, including detecting clicks, long presses, and debouncing.
 
 ## Example
