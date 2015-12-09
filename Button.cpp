@@ -7,7 +7,7 @@
 #define BIT_HOLD_TRIGGERED  3
 #define BIT_HOLD_NOW        4
 
-#define DEBUG_SERIAL
+//#define DEBUG_SERIAL
 
 Button::Button(uint8_t buttonPin, uint8_t buttonMode, uint16_t _debounceDuration)
 {
@@ -18,10 +18,10 @@ Button::Button(uint8_t buttonPin, uint8_t buttonMode, uint16_t _debounceDuration
   debounceDuration = _debounceDuration;
   debounceStartTime = 0;
   pressedStartTime = 0;
-  handlers = nullptr;
+  handlers = 0;
 
   pinMode(myPin, INPUT);
-  bitWrite(state, CURRENT, !mode);
+  bitWrite(state, BIT_CURRENT, (digitalRead(myPin) == mode));
 
 #ifdef DEBUG_SERIAL
   Serial.print("Button init:");
@@ -32,7 +32,7 @@ Button::Button(uint8_t buttonPin, uint8_t buttonMode, uint16_t _debounceDuration
 void Button::process(void)
 {
   // save the previous value
-  bitWrite(state, BIT_PREVIOUS, bitRead(state, CURRENT));
+  bitWrite(state, BIT_PREVIOUS, bitRead(state, BIT_CURRENT));
   
   // get the current status of the pin
   bitWrite(state, BIT_CURRENT, (digitalRead(myPin) == mode));
@@ -42,7 +42,7 @@ void Button::process(void)
 
   uint32_t currentMillis = millis();
 
-  if (bitRead(state, CURRENT) != bitRead(state, PREVIOUS)) {
+  if (bitRead(state, BIT_CURRENT) != bitRead(state, BIT_PREVIOUS)) {
     uint32_t interval = currentMillis - debounceStartTime;
 
     if(interval < uint32_t(debounceDuration)) {
@@ -51,7 +51,7 @@ void Button::process(void)
     }
     debounceStartTime = currentMillis;
 
-    if (bitRead(state, CURRENT)) {
+    if (bitRead(state, BIT_CURRENT)) {
       // Pressed.
       #ifdef DEBUG_SERIAL
       Serial.println("Button press.");
@@ -61,7 +61,8 @@ void Button::process(void)
         handlers->cb_onPress(*this); 
       }
       pressedStartTime = currentMillis;        //start timing
-      triggeredHoldEvent = 0;
+      bitWrite(state, BIT_HOLD_TRIGGERED, false);
+      bitWrite(state, BIT_HOLD_NOW, false);
     } 
     else {
       // Released.
@@ -73,7 +74,7 @@ void Button::process(void)
         handlers->cb_onRelease(*this); 
       }
       // Don't fire both hold and click.
-      if (!triggeredHoldEvent) {
+      if (!bitRead(state, BIT_HOLD_TRIGGERED)) {
         #ifdef DEBUG_SERIAL
         Serial.println("Button click.");
         #endif
@@ -84,57 +85,61 @@ void Button::process(void)
       //reset states (for timing and for event triggering)
       pressedStartTime = 0;
     }
-    bitWrite(state, CHANGED, true);
+    bitWrite(state, BIT_CHANGED, true);
   }
-  else  {
+  else {
     // State did NOT change.
-    bitWrite(state, CHANGED, false);
+    bitWrite(state, BIT_CHANGED, false);
 
     // should we trigger an onHold event? If so - only trigger one!
-    if (pressedStartTime != uint32_t(-1) && !triggeredHoldEvent && bitRead(state, CURRENT)) 
+    if (isDown() && !bitRead(state, BIT_HOLD_TRIGGERED)) 
     {
-      if (currentMillis - pressedStartTime > uint32_t(holdEventThreshold)) 
+      if (pressedStartTime && (currentMillis - pressedStartTime > uint32_t(holdEventThreshold))) 
       { 
         #ifdef DEBUG_SERIAL
-        Serial.println("Button hold.");
+        Serial.print("Button hold. startTime=");
+        Serial.print(pressedStartTime);
+        Serial.print(" currentTime=");
+        Serial.println(currentMillis);
         #endif
+        bitWrite(state, BIT_HOLD_TRIGGERED, true);
+        bitWrite(state, BIT_HOLD_NOW, true);
         if (handlers && handlers->cb_onHold) {
           handlers->cb_onHold(*this);
         } 
-        triggeredHoldEvent = true;
       }
     }
   }
 }
 
 
-bool Button::pressed() const
+bool Button::isDown() const
 {
-	return bitRead(state,CURRENT);
+	return bitRead(state, BIT_CURRENT);
 }
 
 
 bool Button::stateChanged() const
 {
-  return bitRead(state,CHANGED);
+  return bitRead(state, BIT_CHANGED);
 }
 
 
-bool Button::uniquePress() const
+bool Button::press() const
 {
-  return (pressed() && stateChanged());
+  return (isDown() && stateChanged());
 }
 
 
 bool Button::held() const
 {
-  return (pressedStartTime != uint32_t(-1)) && triggeredHoldEvent; 
+  return isDown() && bitRead(state, BIT_HOLD_NOW); 
 }
 
 
 uint32_t Button::holdTime() const
 {
-  if (!pressed())
+  if (!isDown())
     return 0;
   return millis() - pressedStartTime;
 }

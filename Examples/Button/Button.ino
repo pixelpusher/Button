@@ -1,40 +1,29 @@
-/*
-||
-|| @file Button.ino
-|| @version 1.1
-|| @author Alexander Brevig
-|| @contact alexanderbrevig@gmail.com
-||
-|| @description
-|| | Display the intuitive way of using a button when using this Hardware Abstraction class
-|| | Minor fixes by Ted Hayes / ted.hayes@liminastudio.com
-|| #
-||
-|| @license
-|| | Copyright (c) 2009 Alexander Brevig. All rights reserved.
-|| | This code is subject to AlphaLicence.txt
-|| | alphabeta.alexanderbrevig.com/AlphaLicense.txt
-|| #
-||
-*/
+/** 
+ *  Demonstration of how to use the button in query mode.
+ */
 
 #include <Button.h>
 
-//create a Button object at pin 12
-/*
-|| Wiring:
-|| GND -----/ ------ pin 12
-*/
-Button button = Button(12, BUTTON_PULLUP_INTERNAL);
+#define PIN 8
+#define PULL Button::PULL_UP
 
-void setup(){
-  pinMode(13,OUTPUT); //debug to led 13
+Button button(PIN, PULL);
+
+void setup() {
+  Serial.begin(19200);
+  Serial.println("Button Event Demo");
+  pinMode(13, OUTPUT);
 }
 
-void loop(){
-  if(button.isPressed()){
-	digitalWrite(13,HIGH);
-  }else{
-	digitalWrite(13,LOW);
+void loop() {
+  button.process();
+
+  if (button.press()) {
+    Serial.println("LOG: Press");
   }
+  if (button.held()) {
+    Serial.println("LOG: Held");
+  }
+  digitalWrite(13, button.isDown());
 }
+ 

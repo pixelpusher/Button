@@ -1,7 +1,8 @@
 # Button Library
 
 The Button library for Arduino makes common button tasks simple, filters
-out mechanical noise, and adds some handy extra features.
+out mechanical noise, and adds some handy extra features. Solid, dependable
+button handling is surprisingly difficult, so let this library help!
 
 ## Features
 
