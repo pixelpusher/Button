@@ -1,32 +1,27 @@
 #include <Arduino.h>
 #include "Button.h"
 
-// bit positions in the state byte
-#define CURRENT 0
-#define PREVIOUS 1
-#define CHANGED 2
+#define BIT_CURRENT         0
+#define BIT_PREVIOUS        1
+#define BIT_CHANGED         2
+#define BIT_HOLD_TRIGGERED  3
+#define BIT_HOLD_NOW        4
 
-//#define DEBUG_SERIAL
+#define DEBUG_SERIAL
 
 Button::Button(uint8_t buttonPin, uint8_t buttonMode, uint16_t _debounceDuration)
 {
-	myPin=buttonPin;
-  pinMode(myPin,INPUT);
-  handlers = 0;
-  
-  debounceDuration = _debounceDuration;
-  debounceStartTime = millis();
-
-	if (buttonMode == PULL_DOWN)
-    pulldown();
-  else
-    pullup(buttonMode);
-
+	myPin = buttonPin;
+  mode = buttonMode;
   state = 0;
-  bitWrite(state,CURRENT,!mode);
-  
-  triggeredHoldEvent = true;
   holdEventThreshold = DEFAULT_HOLD_TIME;
+  debounceDuration = _debounceDuration;
+  debounceStartTime = 0;
+  pressedStartTime = 0;
+  handlers = nullptr;
+
+  pinMode(myPin, INPUT);
+  bitWrite(state, CURRENT, !mode);
 
 #ifdef DEBUG_SERIAL
   Serial.print("Button init:");
@@ -34,43 +29,30 @@ Button::Button(uint8_t buttonPin, uint8_t buttonMode, uint16_t _debounceDuration
 #endif
 }
 
-
-void Button::pullup(uint8_t buttonMode)
-{
-	mode = PULL_UP;
-}
-
-
-void Button::pulldown(void)
-{
-	mode = PULL_DOWN;
-}
-
-
 void Button::process(void)
 {
-  //save the previous value
-  bitWrite(state, PREVIOUS, bitRead(state, CURRENT));
+  // save the previous value
+  bitWrite(state, BIT_PREVIOUS, bitRead(state, CURRENT));
   
-  //get the current status of the pin
-  bitWrite(state, CURRENT, (digitalRead(myPin) == mode));
+  // get the current status of the pin
+  bitWrite(state, BIT_CURRENT, (digitalRead(myPin) == mode));
+
+  // clear the hold, if it was set.
+  bitWrite(state, BIT_HOLD_NOW, false);
 
   uint32_t currentMillis = millis();
 
-  //handle state changes
-  if (bitRead(state,CURRENT) != bitRead(state,PREVIOUS))
-  {
+  if (bitRead(state, CURRENT) != bitRead(state, PREVIOUS)) {
     uint32_t interval = currentMillis - debounceStartTime;
 
-    if(interval < uint32_t(debounceDuration)){
+    if(interval < uint32_t(debounceDuration)) {
       // not enough time has passed; ignore
       return;
     }
     debounceStartTime = currentMillis;
 
-    //the state changed to PRESSED
-    if (bitRead(state,CURRENT)) 
-    {
+    if (bitRead(state, CURRENT)) {
+      // Pressed.
       #ifdef DEBUG_SERIAL
       Serial.println("Button press.");
       #endif
@@ -79,10 +61,10 @@ void Button::process(void)
         handlers->cb_onPress(*this); 
       }
       pressedStartTime = currentMillis;        //start timing
-      triggeredHoldEvent = false;
+      triggeredHoldEvent = 0;
     } 
-    else //the state changed to RELEASED
-    {
+    else {
+      // Released.
       #ifdef DEBUG_SERIAL
       Serial.println("Button release.");
       #endif
@@ -100,16 +82,15 @@ void Button::process(void)
         }
       }
       //reset states (for timing and for event triggering)
-      pressedStartTime = uint32_t(-1);
+      pressedStartTime = 0;
     }
-    //note that the state changed
-    bitWrite(state,CHANGED,true);
+    bitWrite(state, CHANGED, true);
   }
-  else
-  {
-    //note that the state did not change
-    bitWrite(state,CHANGED,false);
-    //should we trigger an onHold event?
+  else  {
+    // State did NOT change.
+    bitWrite(state, CHANGED, false);
+
+    // should we trigger an onHold event? If so - only trigger one!
     if (pressedStartTime != uint32_t(-1) && !triggeredHoldEvent && bitRead(state, CURRENT)) 
     {
       if (currentMillis - pressedStartTime > uint32_t(holdEventThreshold)) 

@@ -29,9 +29,10 @@ class Button {
   public:
 
     enum {
-        PULL_UP = HIGH,
-        PULL_DOWN = LOW,
-        DEFAULT_HOLD_TIME = 500,
+        PULL_DOWN       = LOW,
+        PULL_UP         = HIGH,
+
+        DEFAULT_HOLD_TIME       = 500,
         DEFAULT_BOUNCE_DURATION = 20
     };    
   
@@ -53,23 +54,20 @@ class Button {
     void process();
 
     /// true if pressed on this loop
-    bool uniquePress() const;
+    bool press() const;
     /// true if the the button is down
-    bool pressed() const;
-    /// true if changed at last process() 
-    bool stateChanged() const;
+    bool isDown() const;
     /// true if the button is held to the trigger time or longer
     bool held() const;
-    /// return the time the button held down
+    /// return the time the button has been held down
     uint32_t holdTime() const;
     
     void setHoldThreshold(uint32_t holdTime);
+    const uint16_t setHoldThreshold() const { return holdEventThreshold; }
 
   private: 
-    void pullup(uint8_t buttonMode);
-    void pulldown();
+    bool stateChanged() const;
 
-    bool                triggeredHoldEvent;
     uint8_t             myPin;
     uint8_t             mode;
     uint8_t             state;
