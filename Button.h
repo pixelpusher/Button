@@ -39,14 +39,14 @@ class Button {
     /**
      *  Construct a button.
      *  'buttonPin' is the pin for this button to use.
-     *  'buttonMode' is the wiring of the button. (Referring to the resistor.)
-     *      - BUTTON_PULLDOWN is 'buttonPin' connected (through a resistor) to ground. When pressed, the button goes high.
-     *      - BUTTON_PULLUP is 'buttonPin' connected (through a resistor) to high. When pressed, the button goes low.
+     *  'buttonMode' is the wiring of the button.
+     *      - A PULL_UP button goes HIGH when pressed. There is a resistors (10k) that ties it to ground when the button is open.
+     *      - A PULL_DOWN button goes to LOW when pressed. There is a resistor (10k) that ties it to logic when the button is open.
      *  'debounceDuration' is how long it takes the button to settle, mechanically, when pressed.
      */
     Button(uint8_t buttonPin, uint8_t buttonMode = PULL_UP, uint16_t debounceDuration = DEFAULT_BOUNCE_DURATION);
     
-    int  pin() const {return myPin; }
+    const int pin() const {return myPin; }
 
     /** Process the button state change. Should be called from loop().
      *  Will call the callbacks, if needed.
