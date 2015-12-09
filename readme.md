@@ -9,18 +9,22 @@ button handling is surprisingly difficult, so let this library help!
 * De-bouncing. Mechanical buttons physically vibrate - bounce - when
   they are first pressed or released. This creates spurious state changes
   that need to be filtered or "de-bounced".
-* Support for pull-up or pull-down configurations.
+* Support for pull-up or pull-down configurations. 
+  * A pull-up button is normally tied to ground with a 10k resistor. When
+    pressed, it connects to positive.
+  * A pull-down button is normally tied to positive with a 10k resistor.
+    When pressed, it connects to ground.
 	
-	Button button(12, Button::PULL_DOWN);
+	Button button(12, Button::PULL_UP);
 
-* Queries for press, down, and held. Queries are checked after the `process()`
+* Queries for 'press', 'down', and 'held'. Queries are checked after the `process()`
   method is called.
 
-	* 'press()' is true when a button is first pressed down.
-	* 'isDown()' returns true if the button is down. (When a button is initially
+	* `press()` is true when a button is first pressed down.
+	* `isDown()` returns true if the button is down. (When a button is initially
 	   pressed both 'press' and 'isDown' will return true. Subsequent queries
 	   to a down button result in 'press' false and `isDown` true.)
-	* 'held()' is true if the button has hit the holdThreshold in this loop.
+	* `held()` is true if the button has hit the holdThreshold in this loop.
 
 * Callacks for press, hold, release, and click. Callbacks are called 
   from the `process()` method. Callbacks are generally easier for more
@@ -69,5 +73,11 @@ button handling is surprisingly difficult, so let this library help!
 
 ## Installing
 
-FIXME
+To download. click the DOWNLOADS button in the top right corner, rename the uncompressed folder Button.
+
+Place the Buttons library folder your <arduinosketchfolder>/libraries/ folder. You may need to create the 
+libraries subfolder if its your first library. Restart the IDE.
+
+Or - even better! - navigate to your <arduinosketchfolder>/libraries/ folder and clone the repro using git.
+
 
