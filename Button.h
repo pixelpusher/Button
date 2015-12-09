@@ -4,12 +4,6 @@
 #include <Arduino.h>
 #include <inttypes.h>
 
-// - #defines inside class
-// - fix up test case
-// - fix up readme
-// - license
-// - post 
-
 class Button;
 typedef void (*buttonEventHandler)(const Button&);
 

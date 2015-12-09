@@ -73,11 +73,11 @@ button handling is surprisingly difficult, so let this library help!
 
 ## Installing
 
-To download. click the DOWNLOADS button in the top right corner, rename the uncompressed folder Button.
+To download. click the "Download Zip" button in the top right corner, rename the uncompressed folder Button.
 
-Place the Buttons library folder your <arduinosketchfolder>/libraries/ folder. You may need to create the 
+Place the Buttons library folder your arduinosketchfolder/libraries/ folder. You may need to create the 
 libraries subfolder if its your first library. Restart the IDE.
 
-Or - even better! - navigate to your <arduinosketchfolder>/libraries/ folder and clone the repro using git.
+Or - even better! - navigate to your arduinosketchfolder/libraries/ folder and clone the repro using git.
 
 
