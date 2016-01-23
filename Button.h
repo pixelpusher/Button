@@ -51,13 +51,13 @@ class Button {
     bool press() const;
     /// true if the the button is down
     bool isDown() const;
-    /// true if the button is held to the trigger time or longer
+    /// true if the button is held to the trigger time
     bool held() const;
     /// return the time the button has been held down
     uint32_t holdTime() const;
     
     void setHoldThreshold(uint32_t holdTime);
-    const uint16_t setHoldThreshold() const { return holdEventThreshold; }
+    const uint16_t holdThreshold() const { return holdEventThreshold; }
 
   private: 
     bool stateChanged() const;
