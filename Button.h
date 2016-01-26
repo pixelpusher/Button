@@ -38,8 +38,9 @@ class Button {
      *      - A PULL_DOWN button goes to LOW when pressed. There is a resistor (10k) that ties it to logic when the button is open.
      *  'debounceDuration' is how long it takes the button to settle, mechanically, when pressed.
      */
-    Button(uint8_t buttonPin, uint8_t buttonMode = PULL_UP, uint16_t debounceDuration = DEFAULT_BOUNCE_DURATION);
+    Button(uint8_t buttonPin=255, uint8_t buttonMode = PULL_UP, uint16_t debounceDuration = DEFAULT_BOUNCE_DURATION);
     
+    void init(uint8_t buttonPin, uint8_t buttonMode = PULL_UP, uint16_t debounceDuration = DEFAULT_BOUNCE_DURATION);
     const int pin() const {return myPin; }
 
     /** Process the button state change. Should be called from loop().
@@ -81,7 +82,7 @@ protected:
  */
 class ButtonCB : public Button {
 public:
-    ButtonCB(uint8_t buttonPin, uint8_t buttonMode = PULL_UP, uint16_t debounceDuration = DEFAULT_BOUNCE_DURATION) :
+    ButtonCB(uint8_t buttonPin=255, uint8_t buttonMode = PULL_UP, uint16_t debounceDuration = DEFAULT_BOUNCE_DURATION) :
         Button(buttonPin, buttonMode, debounceDuration)
     {
         handlers = &handlerData;   

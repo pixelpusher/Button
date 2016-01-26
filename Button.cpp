@@ -11,6 +11,12 @@
 
 Button::Button(uint8_t buttonPin, uint8_t buttonMode, uint16_t _debounceDuration)
 {
+  handlers = 0;
+  init(buttonPin, buttonMode, _debounceDuration);
+}
+
+void Button::init(uint8_t buttonPin, uint8_t buttonMode, uint16_t _debounceDuration)
+{
 	myPin = buttonPin;
   mode = buttonMode;
   state = 0;
@@ -18,15 +24,16 @@ Button::Button(uint8_t buttonPin, uint8_t buttonMode, uint16_t _debounceDuration
   debounceDuration = _debounceDuration;
   debounceStartTime = 0;
   pressedStartTime = 0;
-  handlers = 0;
 
-  pinMode(myPin, INPUT);
-  bitWrite(state, BIT_CURRENT, (digitalRead(myPin) == mode));
+  if (myPin != 255) {
+    pinMode(myPin, INPUT);
+    bitWrite(state, BIT_CURRENT, (digitalRead(myPin) == mode));
 
-#ifdef DEBUG_SERIAL
-  Serial.print("Button init:");
-  Serial.println(buttonPin);
-#endif
+  #ifdef DEBUG_SERIAL
+    Serial.print("Button init:");
+    Serial.println(buttonPin);
+  #endif
+  }
 }
 
 void Button::process(void)
