@@ -38,6 +38,14 @@ void Button::init(uint8_t buttonPin, uint8_t buttonMode, uint16_t _debounceDurat
 
 void Button::process(void)
 {
+  uint32_t currentMillis = millis();
+  uint32_t interval = currentMillis - debounceStartTime;
+
+  if(interval < uint32_t(debounceDuration)) {
+    // not enough time has passed; ignore
+    return;
+  }
+
   // save the previous value
   bitWrite(state, BIT_PREVIOUS, bitRead(state, BIT_CURRENT));
   
@@ -47,15 +55,7 @@ void Button::process(void)
   // clear the hold, if it was set.
   bitWrite(state, BIT_HOLD_NOW, false);
 
-  uint32_t currentMillis = millis();
-
   if (bitRead(state, BIT_CURRENT) != bitRead(state, BIT_PREVIOUS)) {
-    uint32_t interval = currentMillis - debounceStartTime;
-
-    if(interval < uint32_t(debounceDuration)) {
-      // not enough time has passed; ignore
-      return;
-    }
     debounceStartTime = currentMillis;
 
     if (bitRead(state, BIT_CURRENT)) {
