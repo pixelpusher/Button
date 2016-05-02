@@ -60,6 +60,9 @@ class Button {
     void setHoldThreshold(uint32_t holdTime);
     const uint16_t holdThreshold() const { return holdEventThreshold; }
 
+    // For testing - do not call direction.
+    const ButtonCBHandlers* queryHandlers() const { return handlers; }
+
   private: 
     bool stateChanged() const;
 
