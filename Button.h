@@ -60,9 +60,12 @@ class Button {
     void setHoldThreshold(uint32_t holdTime);
     const uint16_t holdThreshold() const { return holdEventThreshold; }
 
-    // For testing - do not call direction.
+    // For testing - do not call in normal use.
     const ButtonCBHandlers* queryHandlers() const { return handlers; }
-
+    void enableTestMode(bool testMode);
+    void testPress();
+    void testRelease();
+    
   private: 
     bool stateChanged() const;
 

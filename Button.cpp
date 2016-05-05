@@ -6,6 +6,8 @@
 #define BIT_CHANGED         2
 #define BIT_HOLD_TRIGGERED  3
 #define BIT_HOLD_NOW        4
+#define BIT_TEST_MODE       5
+#define BIT_TEST_PRESSED    6
 
 //#define DEBUG_SERIAL
 
@@ -49,8 +51,10 @@ void Button::process(void)
   // save the previous value
   bitWrite(state, BIT_PREVIOUS, bitRead(state, BIT_CURRENT));
   
-  // get the current status of the pin
-  bitWrite(state, BIT_CURRENT, (digitalRead(myPin) == mode));
+  if (bitRead(state, BIT_TEST_MODE))
+    bitWrite(state, BIT_CURRENT, bitRead(state, BIT_TEST_PRESSED));
+  else
+    bitWrite(state, BIT_CURRENT, (digitalRead(myPin) == mode));
 
   // clear the hold, if it was set.
   bitWrite(state, BIT_HOLD_NOW, false);
@@ -155,6 +159,23 @@ uint32_t Button::holdTime() const
 void Button::setHoldThreshold(uint32_t holdTime) 
 { 
   holdEventThreshold = holdTime; 
+}
+
+void Button::enableTestMode(bool testMode)
+{
+  bitWrite(state, BIT_TEST_MODE, testMode);
+  bitWrite(state, BIT_TEST_PRESSED, false);
+}
+
+void Button::testPress()
+{
+  bitWrite(state, BIT_TEST_PRESSED, true);
+}
+
+
+void Button::testRelease()
+{
+  bitWrite(state, BIT_TEST_PRESSED, false);
 }
 
 
