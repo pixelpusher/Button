@@ -56,6 +56,8 @@ class Button {
     bool held() const;
     /// return the time the button has been held down
     uint32_t holdTime() const;
+    /// return the last time the button was pressed down
+    uint32_t pressedTime() const { return pressedStartTime; }
     
     void setHoldThreshold(uint32_t holdTime);
     const uint16_t holdThreshold() const { return holdEventThreshold; }

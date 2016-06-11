@@ -44,6 +44,7 @@ void Button::process(void)
   uint32_t interval = currentMillis - debounceStartTime;
 
   if(interval < uint32_t(debounceDuration)) {
+    bitWrite(state, BIT_CHANGED, false);
     // not enough time has passed; ignore
     return;
   }
