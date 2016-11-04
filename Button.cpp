@@ -164,6 +164,9 @@ void Button::setHoldThreshold(uint32_t holdTime)
 
 void Button::enableTestMode(bool testMode)
 {
+  state = 0;
+  pressedStartTime = 0;
+  debounceStartTime = 0;
   bitWrite(state, BIT_TEST_MODE, testMode);
   bitWrite(state, BIT_TEST_PRESSED, false);
 }
