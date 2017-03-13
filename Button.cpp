@@ -29,7 +29,7 @@ void Button::init(uint8_t buttonPin, uint8_t buttonMode, uint16_t _debounceDurat
 
   if (myPin != 255) {
     
-    if (mode == LOW)
+    if (mode == HIGH)
       pinMode(myPin, INPUT_PULLUP);
     else
       pinMode(myPin, INPUT);
@@ -53,6 +53,11 @@ void Button::process(void)
     // not enough time has passed; ignore
     return;
   }
+      
+  #ifdef DEBUG_SERIAL
+  Serial.println("Button press.");
+  #endif
+
 
   // save the previous value
   bitWrite(state, BIT_PREVIOUS, bitRead(state, BIT_CURRENT));
