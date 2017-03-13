@@ -55,9 +55,8 @@ void Button::process(void)
   }
       
   #ifdef DEBUG_SERIAL
-  Serial.println("Button press.");
+  Serial.println("Button process.");
   #endif
-
 
   // save the previous value
   bitWrite(state, BIT_PREVIOUS, bitRead(state, BIT_CURRENT));
@@ -65,7 +64,7 @@ void Button::process(void)
   if (bitRead(state, BIT_TEST_MODE))
     bitWrite(state, BIT_CURRENT, bitRead(state, BIT_TEST_PRESSED));
   else
-    bitWrite(state, BIT_CURRENT, (digitalRead(myPin) == mode));
+    bitWrite(state, BIT_CURRENT, (digitalRead(myPin) != mode));
 
   // clear the hold, if it was set.
   bitWrite(state, BIT_HOLD_NOW, false);
